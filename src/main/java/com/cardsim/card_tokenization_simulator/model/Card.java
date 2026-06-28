@@ -1,6 +1,7 @@
 package com.cardsim.card_tokenization_simulator.model;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 
 @Entity
 @Table(name = "cards")
@@ -47,5 +48,15 @@ public class Card {
 
     public void setEmbossingName(String embossingName) {
         this.embossingName = embossingName;
+    }
+
+    @Override
+    public String toString() {
+        if (pan != null && pan.length() > 3) {
+            return "Card{id=" + id + ", pan=**************" + pan.substring(pan.length()-4)  + ", expiryDate='" + expiryDate + "', embossingName='" + embossingName + "'}";
+        }
+
+        else  return "Card{id=" + id + ", pan=" + "N/A " + ", expiryDate='" + expiryDate + "', embossingName='" + embossingName + "'}";
+
     }
 }
