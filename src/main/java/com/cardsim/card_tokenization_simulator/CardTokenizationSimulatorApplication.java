@@ -13,6 +13,7 @@ import org.springframework.data.repository.Repository;
 @SpringBootApplication
 public class CardTokenizationSimulatorApplication {
 	//Only run once
+    /*
 	@Bean
 public CommandLineRunner testRun(TokenizationService tokenizationService){
 
@@ -29,7 +30,7 @@ public CommandLineRunner testRun(TokenizationService tokenizationService){
 			System.out.println("Status: " + token.getStatus());
 
 		};
-	}
+	}*/
 
 	public static void main(String[] args) {
 
