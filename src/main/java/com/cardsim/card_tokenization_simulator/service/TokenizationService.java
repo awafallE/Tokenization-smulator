@@ -1,5 +1,7 @@
 package com.cardsim.card_tokenization_simulator.service;
 
+import com.cardsim.card_tokenization_simulator.dto.CardRequest;
+import com.cardsim.card_tokenization_simulator.dto.TokenResponse;
 import com.cardsim.card_tokenization_simulator.model.Card;
 import com.cardsim.card_tokenization_simulator.model.Token;
 import com.cardsim.card_tokenization_simulator.model.TokenStatus;
@@ -27,18 +29,23 @@ public class TokenizationService {
         this.tokenRepository = tokenRepository;
     }
     @Transactional
-    public Token tokenizeNewCard(Card card) {
+    public TokenResponse tokenizeNewCard(CardRequest request) {
+        Card  card=new Card();
+        card.setPan(request.getPan());
+        card.setExpiryDate(request.getExpiryDate());
+        card.setEmbossingName(request.getEmbossingName());
+
         Card savedCard = cardRepository.save(card);
         return createToken(savedCard);
     }
 
-    public Token tokenizeExistingCard(Long cardId) {
+    public TokenResponse tokenizeExistingCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
         return createToken(card);
     }
 
-    private Token createToken(Card card) {
+    private TokenResponse createToken (Card card) {
         String tokenValue = generateTokenValue();
         String lastFour = card.getPan().substring(card.getPan().length() - 4);
 
@@ -48,8 +55,8 @@ public class TokenizationService {
         token.setCard(card);
         token.setStatus(TokenStatus.ACTIVE);
         token.setCreatedAt(LocalDateTime.now());
-
-        return tokenRepository.save(token);
+        tokenRepository.save(token);
+        return new TokenResponse(tokenValue,lastFour,TokenStatus.ACTIVE);
     }
 
     private  String generateTokenValue() {
