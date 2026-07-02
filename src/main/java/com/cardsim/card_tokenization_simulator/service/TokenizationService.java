@@ -66,5 +66,10 @@ public class TokenizationService {
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
     }
+    public TokenResponse getTokenByValue(String tokenValue){
+        Token token= tokenRepository.findByTokenValue(tokenValue).orElseThrow(() -> new IllegalArgumentException("Token not found: " + tokenValue));
+         return new TokenResponse( token.getTokenValue(), token.getLastFourDigits(), token.getStatus());
+
+    }
 
 }
