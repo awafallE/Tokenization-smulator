@@ -30,15 +30,16 @@ public class TokenizationService {
     }
     @Transactional
     public TokenResponse tokenizeNewCard(CardRequest request) {
-        Card  card=new Card();
-        card.setPan(request.getPan());
-        card.setExpiryDate(request.getExpiryDate());
-        card.setEmbossingName(request.getEmbossingName());
-
-        Card savedCard = cardRepository.save(card);
-        return createToken(savedCard);
+        Card card = cardRepository.findByPan(request.getPan())
+                .orElseGet(() -> {
+                    Card newCard = new Card();
+                    newCard.setPan(request.getPan());
+                    newCard.setExpiryDate(request.getExpiryDate());
+                    newCard.setEmbossingName(request.getEmbossingName());
+                    return cardRepository.save(newCard);
+                });
+        return createToken(card);
     }
-
     public TokenResponse tokenizeExistingCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
