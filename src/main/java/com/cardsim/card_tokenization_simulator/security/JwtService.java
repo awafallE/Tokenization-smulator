@@ -15,7 +15,7 @@ public class JwtService {
 
     private final SecretKey secretKey;
     private final long expirationMs = 86400000; // 24 hours
-
+    //Using JWS (json web signature) instead of JWE(That encrypt the TOKEN)
     public JwtService(@Value("${jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
