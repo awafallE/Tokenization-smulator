@@ -3,6 +3,10 @@ kind: ConfigMap
 metadata:
   name: card-service-config
 data:
-  SPRING_PROFILES_ACTIVE: "docker"
   SPRING_APPLICATION_NAME: "card-service"
   SERVER_PORT: "8080"
+  JWT_SECRET: "MySuperSecretKeyForJWTSigningThatIsLongEnough123456"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_DATASOURCE_URL: "jdbc:h2:mem:carddb"
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.h2.Driver"
+  SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.H2Dialect"
