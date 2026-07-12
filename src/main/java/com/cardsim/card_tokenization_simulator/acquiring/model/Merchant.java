@@ -53,6 +53,17 @@ public class Merchant {
     private List<MerchantSettlementCondition> settlementConditions;
 
 
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    private List<MerchantContract> merchantContracts;
+
+    public List<MerchantContract> getMerchantContracts() {
+        return merchantContracts;
+    }
+
+    public void setMerchantContracts(List<MerchantContract> merchantContracts) {
+        this.merchantContracts = merchantContracts;
+    }
+
     public Long getId() {
         return id;
     }

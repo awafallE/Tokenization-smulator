@@ -1,4 +1,4 @@
-package com.cardsim.card_tokenization_simulator.controller;
+package com.cardsim.card_tokenization_simulator.acquiring.controller;
 
 import com.cardsim.card_tokenization_simulator.acquiring.dto.CreateContractRequest;
 import com.cardsim.card_tokenization_simulator.acquiring.dto.MerchantContractResponse;
@@ -31,6 +31,20 @@ public class MerchantContractController {
             @PathVariable String contractReference) {
         return ResponseEntity.ok(merchantContractService.activateContract(contractReference));
     }
+    @PatchMapping("/{contractReference}/suspend")
+    public ResponseEntity<MerchantContractResponse> suspended(
+            @PathVariable String contractReference) {
+        return ResponseEntity.ok(merchantContractService.suspendContract(contractReference));
+    }
+    @PatchMapping("/{contractReference}/unsuspend")
+    public ResponseEntity<MerchantContractResponse> unsuspended(
+            @PathVariable String contractReference) {
+        return ResponseEntity.ok(merchantContractService.unsuspendContract(contractReference));
+    }
+    @PatchMapping("/{contractReference}/close")
+    public ResponseEntity<MerchantContractResponse> closed(
+            @PathVariable String contractReference) {
+        return ResponseEntity.ok(merchantContractService.closeContract(contractReference));
+    }
 
-    // write suspend, unsuspend, close yourself — same pattern
 }

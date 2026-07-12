@@ -17,6 +17,7 @@ public class MerchantActivity {
     private LocalDate openingDate;
     @Column(nullable = false)
     private String description;
+
     @ManyToOne
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;

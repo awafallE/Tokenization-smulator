@@ -1,134 +1,118 @@
-package com.cardsim.card_tokenization_simulator.dto;
+package com.cardsim.card_tokenization_simulator.acquiring.dto;
 
 import com.cardsim.card_tokenization_simulator.acquiring.model.*;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 public class CreateContractRequest {
 
-        private Long id;
-        @Column(nullable = false,unique = true)
-        private String contractReference;
-        @Column(nullable = false)
-        private String productCode;
-        @Column(nullable = false)
-        private LocalDate contractStartDate;
-        private LocalDate contractEndDate;
-        @Column(nullable = false)
-        @Enumerated(EnumType.STRING)
-        private Status status;
-        @Column(nullable = false)
-        private String acceptedNetworks;
-        private LocalDateTime createdAt;
-        @ManyToOne
-        @JoinColumn(name = "merchant_id", nullable = false)
-        private Merchant merchant;
-        @OneToMany(mappedBy = "merchantContract", cascade = CascadeType.ALL)
-        List<ContractService> contractServices;
-        @OneToMany(mappedBy = "merchantContract", cascade = CascadeType.ALL)
-        List<BillableElement> billableElement;
-        @OneToMany(mappedBy = "merchantContract", cascade = CascadeType.ALL)
-        List<ContractSettlementCondition> contractSettlementCondition;
+    @NotBlank(message = "contractReference is required")
+    private String contractReference;
 
+    private String merchantId;
 
-        public Long getId() {
-            return id;
-        }
+    @NotBlank(message = "productCode is required")
+    private String productCode;
 
-        public void setId(Long id) {
-            this.id = id;
-        }
+    @NotNull(message = "contractStartDate is required")
+    private LocalDate contractStartDate;
 
-        public String getContractReference() {
-            return contractReference;
-        }
+    private LocalDate contractEndDate; // optional
 
-        public void setContractReference(String contractReference) {
-            this.contractReference = contractReference;
-        }
+    @NotBlank(message = "acceptedNetworks is required")
+    private String acceptedNetworks;
 
-        public String getProductCode() {
-            return productCode;
-        }
+    @Valid
+    @NotNull(message = "At least one service is required")
+    @Size(min = 1, message = "At least one service is required")
+    private List<ContractServiceDto> services;
 
-        public void setProductCode(String productCode) {
-            this.productCode = productCode;
-        }
+    @Valid
+    @NotNull(message = "At least one billable element is required")
+    @Size(min = 1, message = "At least one billable element is required")
+    private List<BillableElementDto> billableElements;
 
-        public LocalDate getContractStartDate() {
-            return contractStartDate;
-        }
+    @Valid
+    @NotNull(message = "At least one settlement condition is required")
+    @Size(min = 1, message = "At least one settlement condition is required")
+    private List<ContractSettlementConditionDto> settlementConditions;
 
-        public void setContractStartDate(LocalDate contractStartDate) {
-            this.contractStartDate = contractStartDate;
-        }
-
-        public LocalDate getContractEndDate() {
-            return contractEndDate;
-        }
-
-        public void setContractEndDate(LocalDate contractEndDate) {
-            this.contractEndDate = contractEndDate;
-        }
-
-        public Status getStatus() {
-            return status;
-        }
-
-        public void setStatus(Status status) {
-            this.status = status;
-        }
-
-        public String getAcceptedNetworks() {
-            return acceptedNetworks;
-        }
-
-        public void setAcceptedNetworks(String acceptedNetworks) {
-            this.acceptedNetworks = acceptedNetworks;
-        }
-
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
-
-        public void setCreatedAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-        }
-
-        public Merchant getMerchant() {
-            return merchant;
-        }
-
-        public void setMerchant(Merchant merchant) {
-            this.merchant = merchant;
-        }
-
-        public List<ContractService> getContractServices() {
-            return contractServices;
-        }
-
-        public void setContractServices(List<ContractService> contractServices) {
-            this.contractServices = contractServices;
-        }
-
-        public List<BillableElement> getBillableElement() {
-            return billableElement;
-        }
-
-        public void setBillableElement(List<BillableElement> billableElement) {
-            this.billableElement = billableElement;
-        }
-
-        public List<ContractSettlementCondition> getContractSettlementCondition() {
-            return contractSettlementCondition;
-        }
-
-        public void setContractSettlementCondition(List<ContractSettlementCondition> contractSettlementCondition) {
-            this.contractSettlementCondition = contractSettlementCondition;
-        }
+    public String getContractReference() {
+        return contractReference;
     }
 
+    public void setContractReference(String contractReference) {
+        this.contractReference = contractReference;
+    }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public LocalDate getContractStartDate() {
+        return contractStartDate;
+    }
+
+    public void setContractStartDate(LocalDate contractStartDate) {
+        this.contractStartDate = contractStartDate;
+    }
+
+    public LocalDate getContractEndDate() {
+        return contractEndDate;
+    }
+
+    public void setContractEndDate(LocalDate contractEndDate) {
+        this.contractEndDate = contractEndDate;
+    }
+
+    public String getAcceptedNetworks() {
+        return acceptedNetworks;
+    }
+
+    public void setAcceptedNetworks(String acceptedNetworks) {
+        this.acceptedNetworks = acceptedNetworks;
+    }
+
+    public List<ContractServiceDto> getServices() {
+        return services;
+    }
+
+    public void setServices(List<ContractServiceDto> services) {
+        this.services = services;
+    }
+
+    public List<BillableElementDto> getBillableElements() {
+        return billableElements;
+    }
+
+    public void setBillableElements(List<BillableElementDto> billableElements) {
+        this.billableElements = billableElements;
+    }
+
+    public List<ContractSettlementConditionDto> getSettlementConditions() {
+        return settlementConditions;
+    }
+
+    public void setSettlementConditions(List<ContractSettlementConditionDto> settlementConditions) {
+        this.settlementConditions = settlementConditions;
+    }
+}
 

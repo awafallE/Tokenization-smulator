@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/acquiring/merchants")
-public class TokenizationController {
+public class MerchantController {
     private final MerchantService merchantService;
-    public TokenizationController(MerchantService merchantService) {
+    public MerchantController(MerchantService merchantService) {
         this.merchantService = merchantService;
     }
 
