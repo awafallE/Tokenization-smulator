@@ -10,6 +10,10 @@ import com.cardsim.card_tokenization_simulator.acquiring.repository.AcceptorPoin
 import com.cardsim.card_tokenization_simulator.acquiring.repository.MerchantActivityRepository;
 import com.cardsim.card_tokenization_simulator.acquiring.repository.MerchantContractRepository;
 import com.cardsim.card_tokenization_simulator.acquiring.repository.MerchantRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class QRCodeService {
@@ -29,7 +33,6 @@ public class QRCodeService {
 
     public GenerateQRCodeResponse generateQRCode(GenerateQRCodeRequest request) {
 
-        // Step 1: Validate merchant exists and not CLOSED
         Merchant merchant = merchantRepository
                 .findByMerchantId(request.getMerchantId())
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -40,49 +43,42 @@ public class QRCodeService {
                     "Cannot generate QR for closed merchant");
         }
 
-        // Step 2: Validate acceptorPoint exists and belongs to merchant
         AcceptorPoint acceptorPoint=acceptorPointRepository.findByAcceptorPointId(request.getAcceptorPointId()).orElseThrow(()-> new IllegalArgumentException("acceptor point not found"+request.getAcceptorPointId()));
 
+        boolean belongsToMerchant = merchant.getMerchantSites().stream()
+                .flatMap(site -> site.getAcceptor().stream())
+                .anyMatch(ap -> ap.getAcceptorPointId().equals(request.getAcceptorPointId()));
 
-        boolean belongsToMerchant = false;
-       /* Find the acceptor point in the database.
-                Search through all the merchant's sites.
-        If you find the acceptor point → OK.
-                After searching everything, if you never found it, then throw the exception.*/
-        for(MerchantSite merchantSite:merchant.getMerchantSites()){
-        for(AcceptorPoint acceptorPoint1:merchantSite.getAcceptor()){
-            if(acceptorPoint1.getAcceptorPointId().equals(request.getAcceptorPointId())){
-                belongsToMerchant=true;
-            }else
-                belongsToMerchant=false;
-
-        }
-        if(!belongsToMerchant){
-        throw  new IllegalArgumentException("acceptor point does not belong to merchant");}
+        if (!belongsToMerchant) {
+            throw new IllegalArgumentException("acceptor point does not belong to merchant");
         }
 
-        // hint: use acceptorPointRepository.findByAcceptorPointId()
-        // then check acceptorPoint.getMerchantSite().getMerchant()
-        //      .getMerchantId().equals(request.getMerchantId())
-
-        // Step 3: Validate at least one ACTIVE contract exists
-        // hint: merchant.getMerchantContracts().stream()
-        //       .anyMatch(c -> c.getStatus().equals(Status.ACTIVE))
+        boolean contractCheck= merchant.getMerchantContracts().stream().anyMatch(c->c.getStatus().equals(Status.ACTIVE));
+        if (!contractCheck) {
+            throw new IllegalArgumentException("At least one contract must be active");
+        }
 
         // Step 4: Get MCC from merchant's primary activity
-        // hint: merchant.getActivities().stream()
-        //       .filter(a -> "P".equals(a.getActivityType()))
-        //       .findFirst()
-        //       .orElseThrow(...)
-        //       .getMcc()
+         String mcc=merchant.getActivities().stream().filter(a->"P".equals(a.getActivityType())).findFirst().orElseThrow(()->new  IllegalArgumentException("don't have a primary activity")).getMcc();
+
 
         // Step 5: Determine QR type
         // STATIC if amount is null, DYNAMIC if amount provided
-
+        String qrType = request.getAmount() != null ? "DYNAMIC" : "STATIC";
         // Step 6: Generate EMVCo QR string
         // call buildEMVCoQRString(merchant, acceptorPoint, request, mcc)
+        String qrValue = buildEMVCoQRString(merchant, acceptorPoint, request, mcc);
 
-        // Step 7: Build and return response
+        GenerateQRCodeResponse response = new GenerateQRCodeResponse();
+        response.setMerchantId(merchant.getMerchantId());
+        response.setAcceptorPointId(acceptorPoint.getAcceptorPointId());
+        response.setQrType(qrType);
+        response.setCurrency(request.getCurrency());
+        response.setAmount(request.getAmount());
+        response.setQrValue(qrValue);
+        response.setGeneratedAt(LocalDateTime.now());
+        return response;
+
     }
 
     private String buildEMVCoQRString(
