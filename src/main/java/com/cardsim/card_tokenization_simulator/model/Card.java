@@ -3,6 +3,8 @@ package com.cardsim.card_tokenization_simulator.model;
 import jakarta.persistence.*;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "cards")
 public class Card {
@@ -12,8 +14,8 @@ public class Card {
     @Column(nullable = false, unique = true)
     private String pan;
 
-    @Column(nullable = false)
-    private String expiryDate;
+    @Column(name = "expiry_date")
+    private LocalDate expiryDate;
 
     @Column(nullable = false)
     private String embossingName;
@@ -34,11 +36,11 @@ public class Card {
         this.pan = pan;
     }
 
-    public String getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(String expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
